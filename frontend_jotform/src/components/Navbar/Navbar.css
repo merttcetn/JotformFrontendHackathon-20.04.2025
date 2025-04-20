@@ -83,8 +83,8 @@
 }
 
 .cart-label {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 300;
     color: #34495e;
     margin-left: 0.5rem;
 }
@@ -94,7 +94,7 @@
 }
 
 .cart-icon:hover svg {
-    color: #3498db;
+    color: #28a745;
     transform: scale(1.1);
 }
 

@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    items: [],
-    total: 0,
+    items: [], // array of items in the cart
+    total: 0, // total price of the cart
 };
 
 const cartSlice = createSlice({
@@ -17,13 +17,22 @@ const cartSlice = createSlice({
             if (existingItem) {
                 existingItem.quantity += 1;
             } else {
-                state.items.push({ ...action.payload, quantity: 1 });
+                state.items.push({
+                    ...action.payload,
+                    quantity: 1,
+                });
             }
 
             state.total = state.items.reduce(
                 (sum, item) => sum + parseFloat(item.price) * item.quantity,
                 0
             );
+
+            // debug log
+            console.log("Cart updated:", {
+                items: state.items,
+                total: state.total,
+            });
         },
         removeFromCart: (state, action) => {
             state.items = state.items.filter(
@@ -33,6 +42,12 @@ const cartSlice = createSlice({
                 (sum, item) => sum + parseFloat(item.price) * item.quantity,
                 0
             );
+
+            // debug log
+            console.log("Cart updated:", {
+                items: state.items,
+                total: state.total,
+            });
         },
         updateQuantity: (state, action) => {
             const { pid, quantity } = action.payload;
@@ -43,11 +58,20 @@ const cartSlice = createSlice({
                     (sum, item) => sum + parseFloat(item.price) * item.quantity,
                     0
                 );
+
+                // debug log
+                console.log("Cart updated:", {
+                    items: state.items,
+                    total: state.total,
+                });
             }
         },
         clearCart: (state) => {
             state.items = [];
             state.total = 0;
+
+            // debug log
+            console.log("Cart cleared");
         },
     },
 });

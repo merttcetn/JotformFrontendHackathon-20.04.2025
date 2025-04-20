@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+
+// icons
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+
+// components
 import CartModal from "../Cart/CartModal";
+
+// styles
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -35,7 +41,6 @@ const Navbar = () => {
                         onClick={() => setIsCartOpen(true)}
                         aria-label="Shopping Cart"
                     >
-                        <label className="cart-label">Cart</label>
                         <ShoppingCartIcon />
                         {cartCount > 0 && (
                             <span className="cart-count">{cartCount}</span>
