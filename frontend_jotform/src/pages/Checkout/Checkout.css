@@ -333,3 +333,25 @@
         transform: rotate(360deg);
     }
 }
+
+.name-inputs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.name-inputs label {
+    flex: 1;
+}
+
+.first-name,
+.last-name {
+    margin-bottom: 0 !important;
+}
+
+@media (max-width: 600px) {
+    .name-inputs {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

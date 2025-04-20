@@ -9,6 +9,8 @@ const Products = ({ formId }) => {
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [displayedProducts, setDisplayedProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("all");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -20,6 +22,12 @@ const Products = ({ formId }) => {
                 if (data && data.content) {
                     setPaymentInfo(data.content);
                     setDisplayedProducts(data.content.products);
+
+                    // Kategorileri çıkar
+                    const uniqueCategories = extractCategories(
+                        data.content.products
+                    );
+                    setCategories(uniqueCategories);
                 } else {
                     setError("Invalid response format");
                 }
@@ -33,6 +41,38 @@ const Products = ({ formId }) => {
 
         fetchData();
     }, [formId]);
+
+    // Ürünlerden kategori listesi çıkaran yardımcı fonksiyon
+    const extractCategories = (products) => {
+        const categoriesSet = new Set();
+        products.forEach((product) => {
+            if (product.category) {
+                categoriesSet.add(product.category);
+            } else if (product.cid) {
+                categoriesSet.add(`Category ${product.cid}`);
+            }
+        });
+        return ["all", ...Array.from(categoriesSet)];
+    };
+
+    // Kategori değiştiğinde ürünleri filtrele
+    const handleCategoryChange = (category) => {
+        setSelectedCategory(category);
+
+        if (category === "all") {
+            setDisplayedProducts(paymentInfo.products);
+        } else {
+            const filtered = paymentInfo.products.filter((product) => {
+                if (product.category) {
+                    return product.category === category;
+                } else if (product.cid) {
+                    return `Category ${product.cid}` === category;
+                }
+                return false;
+            });
+            setDisplayedProducts(filtered);
+        }
+    };
 
     // prevent body scroll when modal is open
     useEffect(() => {
@@ -53,9 +93,26 @@ const Products = ({ formId }) => {
                 <h1>All Products</h1>
                 {paymentInfo && paymentInfo.products && (
                     <div className="products-count">
+                        {displayedProducts.length} of{" "}
                         {paymentInfo.products.length} products listed
                     </div>
                 )}
+            </div>
+
+            {/* Kategori filtre menüsü */}
+            <div className="category-filter">
+                <label htmlFor="category-select">Filter by Category:</label>
+                <select
+                    id="category-select"
+                    value={selectedCategory}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                >
+                    {categories.map((category, index) => (
+                        <option key={index} value={category}>
+                            {category === "all" ? "All Categories" : category}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             {loading && (
@@ -79,7 +136,7 @@ const Products = ({ formId }) => {
                 !loading &&
                 !error && (
                     <div className="no-products">
-                        No products available right now 😔
+                        No products available with the selected filter 😔
                     </div>
                 )
             )}

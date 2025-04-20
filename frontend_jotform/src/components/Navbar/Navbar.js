@@ -51,9 +51,6 @@ const Navbar = () => {
                     <Link to="/products" className="nav-link">
                         Products
                     </Link>
-                    <Link to="/about" className="nav-link">
-                        About
-                    </Link>
                 </div>
 
                 <div className="navbar-icons">

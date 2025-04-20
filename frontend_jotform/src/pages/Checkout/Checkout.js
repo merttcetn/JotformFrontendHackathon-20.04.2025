@@ -9,8 +9,12 @@ const Checkout = () => {
     const dispatch = useDispatch();
     const cartItems = useSelector((state) => state.cart.items);
     const total = useSelector((state) => state.cart.total);
+    const selectedProductsList = useSelector(
+        (state) => state.cart.selectedProductsList
+    );
 
-    const [fullName, setFullName] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [address, setAddress] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -25,8 +29,13 @@ const Checkout = () => {
 
     const handleSubmitOrder = async () => {
         // Form validation
-        if (!fullName.trim()) {
-            setErrorMessage("Please enter your full name");
+        if (!firstName.trim()) {
+            setErrorMessage("Please enter your first name");
+            return;
+        }
+
+        if (!lastName.trim()) {
+            setErrorMessage("Please enter your last name");
             return;
         }
 
@@ -44,7 +53,7 @@ const Checkout = () => {
         const formID = "251074257490962"; // FORM ID 2
         const apiKey = "297573601db060dc8f2ad816457a599e";
 
-        // Ürün detaylarını formatla
+        // Ürün detaylarını formatla (debug için)
         const productDetails = cartItems
             .map(
                 (item) =>
@@ -59,22 +68,36 @@ const Checkout = () => {
         const orderTotal = (total + total * 0.08).toFixed(2);
         const orderDate = new Date().toLocaleString();
 
+        // JotForm formata dönüştürülen ürün listesini JSON string olarak hazırla
+        const selectedProductsListString = JSON.stringify(selectedProductsList);
+
         console.log("Preparing order data:", {
             products: productDetails,
-            customer: { fullName, address },
+            customer: { firstName, lastName, address },
             orderDetails: { total: orderTotal, date: orderDate },
+            selectedProductsList: selectedProductsList,
         });
 
-        // Form verilerini hazırla
-        const formData = new URLSearchParams({
-            "submission[q59_myProducts]": productDetails,
-            "submission[q121_fullName]": fullName,
-            "submission[q122_typeA122]": address,
-            "submission[q123_totalAmount]": orderTotal,
-            "submission[q124_orderDate]": orderDate,
-        });
+        // Curl formatına uygun form verileri hazırla
+        const formData = new URLSearchParams();
 
-        // Submission URL'i görelim
+        // JotForm formatında ürün bilgilerini ekle
+        formData.append("submission[59]", selectedProductsListString);
+
+        // Müşteri adı
+        formData.append("submission[121_first]", firstName);
+        formData.append("submission[121_last]", lastName);
+
+        // Adres bilgisi
+        formData.append("submission[122]", address);
+
+        // Toplam tutar
+        formData.append("submission[123]", orderTotal);
+
+        // Sipariş tarihi
+        formData.append("submission[124]", orderDate);
+
+        // Submission URL'i
         const submissionUrl = `https://api.jotform.com/form/${formID}/submissions?apiKey=${apiKey}`;
         console.log("Submitting to:", submissionUrl);
         console.log("Form data:", formData.toString());
@@ -148,16 +171,32 @@ const Checkout = () => {
                             <div className="error-message">{errorMessage}</div>
                         )}
 
-                        <label>
-                            Full Name:
-                            <input
-                                type="text"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
-                                placeholder="Enter your full name"
-                                required
-                            />
-                        </label>
+                        <div className="name-inputs">
+                            <label className="first-name">
+                                First Name:
+                                <input
+                                    type="text"
+                                    value={firstName}
+                                    onChange={(e) =>
+                                        setFirstName(e.target.value)
+                                    }
+                                    placeholder="Enter your first name"
+                                    required
+                                />
+                            </label>
+                            <label className="last-name">
+                                Last Name:
+                                <input
+                                    type="text"
+                                    value={lastName}
+                                    onChange={(e) =>
+                                        setLastName(e.target.value)
+                                    }
+                                    placeholder="Enter your last name"
+                                    required
+                                />
+                            </label>
+                        </div>
                         <label>
                             Address:
                             <input
