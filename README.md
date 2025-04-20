@@ -17,6 +17,13 @@ Bu proje, Jotform Frontend Hackathon için geliştirilmiş bir e-ticaret web uyg
 -   Redux ile durum yönetimi
 -   Her ürün için benzer ürün önerileri
 -   Sepette gerçek zamanlı toplam fiyat hesaplaması
+-   Kategori bazlı filtreleme ve arama özelliği
+
+## Arama ve Filtreleme Özellikleri
+
+Kullanıcılar, ürünler sayfasında ürünleri kategoriye göre filtreleyebilir veya arama çubuğunu kullanarak belirli ürünleri arayabilirler. Bu özellik, kullanıcıların istedikleri ürünleri hızlıca bulmalarını sağlar.
+
+![Ürün Filtreleme ve Arama](screenshots/product_filter_search.png)
 
 ## Benzer Ürünler Özelliği
 
