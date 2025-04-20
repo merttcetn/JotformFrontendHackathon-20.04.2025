@@ -9,12 +9,6 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    backdrop-filter: blur(5px);
-    transition: background-color 0.3s ease;
-}
-
-.modal-overlay:hover {
-    background-color: rgba(0, 0, 0, 0.8);
 }
 
 .modal-content {
@@ -26,14 +20,6 @@
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
-    transform: scale(0.95);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.modal-content:hover {
-    transform: scale(1);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .close-button {
@@ -47,14 +33,10 @@
     color: #666;
     padding: 0.5rem;
     line-height: 1;
-    transition: all 0.3s ease;
 }
 
 .close-button:hover {
     color: #333;
-    transform: rotate(90deg);
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 50%;
 }
 
 .modal-product {
@@ -65,13 +47,6 @@
 .modal-image {
     flex: 1;
     min-width: 300px;
-    overflow: hidden;
-    border-radius: 8px;
-    transition: transform 0.3s ease;
-}
-
-.modal-image:hover {
-    transform: scale(1.02);
 }
 
 .modal-image img {
@@ -79,11 +54,6 @@
     height: auto;
     border-radius: 4px;
     object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.modal-image:hover img {
-    transform: scale(1.05);
 }
 
 .modal-details {
@@ -97,33 +67,18 @@
     font-size: 1.8rem;
     color: #333;
     margin: 0;
-    transition: color 0.3s ease;
-}
-
-.modal-title:hover {
-    color: #007bff;
 }
 
 .modal-description {
     font-size: 1.1rem;
     color: #666;
     line-height: 1.6;
-    transition: color 0.3s ease;
-}
-
-.modal-description:hover {
-    color: #333;
 }
 
 .modal-price {
     font-size: 1.5rem;
     font-weight: bold;
     color: #28a745;
-    transition: transform 0.3s ease;
-}
-
-.modal-price:hover {
-    transform: scale(1.05);
 }
 
 .modal-ids {
@@ -138,13 +93,6 @@
     background: #f8f9fa;
     padding: 0.5rem 1rem;
     border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.modal-ids span:hover {
-    background: #e9ecef;
-    color: #333;
-    transform: translateY(-2px);
 }
 
 .modal-add-to-cart {
@@ -158,18 +106,12 @@
     font-size: 1.1rem;
     font-weight: 500;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .modal-add-to-cart:hover {
     background-color: #218838;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.modal-add-to-cart:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
