@@ -52,28 +52,85 @@
 
 .hero {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 4rem 5%;
+    padding: 6rem 5%;
     text-align: center;
-    min-height: 60vh;
+    min-height: 70vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
 }
 
 .hero-content {
     max-width: 800px;
+    padding: 3rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transform: translateY(-10px);
+    animation: fadeInUp 1s ease-out forwards;
+    z-index: 10;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .hero h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: #333;
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    color: white;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.5px;
 }
 
 .hero p {
-    font-size: 1.2rem;
-    color: #666;
-    margin-bottom: 2rem;
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+.hero-cta-button {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: white;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+}
+
+.hero-cta-button:hover {
+    background-color: #c0392b;
+    box-shadow: 0 8px 20px rgba(231, 76, 60, 0.6);
+    transform: translateY(-3px);
+}
+
+.hero-cta-button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(231, 76, 60, 0.4);
 }
 
 .featured-products {
@@ -237,12 +294,31 @@
 }
 
 @media (max-width: 768px) {
-    .nav-links {
-        display: none;
+    .hero {
+        padding: 4rem 5%;
+        min-height: 60vh;
+    }
+
+    .hero-content {
+        padding: 2rem;
     }
 
     .hero h1 {
-        font-size: 2rem;
+        font-size: 2.2rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .hero-cta-button {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+    }
+
+    .nav-links {
+        display: none;
     }
 
     .product-grid {

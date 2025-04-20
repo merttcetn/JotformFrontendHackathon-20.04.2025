@@ -16,7 +16,7 @@ function App() {
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [displayedProducts, setDisplayedProducts] = useState([]);
-    const [formTitle, setFormTitle] = useState("Mert's E-commerce");
+    const [formTitle, setFormTitle] = useState("");
 
     // form id for jotform apis
     const FORM_ID_1 = "251073674521959";
@@ -90,7 +90,17 @@ function App() {
 
     const HomePage = () => (
         <>
-            <section className="hero">
+            <section
+                className="hero"
+                style={{
+                    backgroundImage:
+                        'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80")',
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    color: "white",
+                }}
+            >
                 <div className="hero-content">
                     <h1>{formTitle} Website 2025</h1>
                     <p>Discover amazing products at unbeatable prices</p>

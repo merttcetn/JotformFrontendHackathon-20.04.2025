@@ -12,12 +12,18 @@ Bu proje, Jotform Frontend Hackathon için geliştirilmiş bir e-ticaret web uyg
 
 -   Görsellerle, açıklamalarla ve fiyatlandırma ile ürün gösterimi
 -   Ekleme/çıkarma işlevselliğine sahip alışveriş sepeti
--   Jotform ile entegre ödeme süreci
 -   Mobil ve masaüstü için duyarlı tasarım
 -   Redux ile durum yönetimi
 -   Her ürün için benzer ürün önerileri
 -   Sepette gerçek zamanlı toplam fiyat hesaplaması
 -   Kategori bazlı filtreleme ve arama özelliği
+-   Jotform form verilerine göre dinamik sayfa başlığı
+
+## Dinamik Sayfa Başlığı
+
+Uygulama, Jotform'dan alınan form verilerine göre sayfa başlığını otomatik olarak günceller. Bu sayede farklı form ID'leri kullanıldığında, o forma ait başlık sayfada görüntülenir.
+
+![Dinamik Sayfa Başlığı](screenshots/dynamic_title.png)
 
 ## Arama ve Filtreleme Özellikleri
 
