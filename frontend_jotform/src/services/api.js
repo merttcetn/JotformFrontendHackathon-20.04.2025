@@ -29,7 +29,14 @@ export const fetchPaymentInfo = async (formId) => {
         }
 
         const data = await response.json();
-        console.log("Response data:", data);
+        console.log("Raw response data:", data);
+
+        // Check if the response has the expected format
+        if (!data || !data.content) {
+            console.error("Invalid response format:", data);
+            throw new Error("Invalid response format from API");
+        }
+
         return data;
     } catch (error) {
         console.error("Error in fetchPaymentInfo:", error);

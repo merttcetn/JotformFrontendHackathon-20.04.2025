@@ -7,16 +7,26 @@ function App() {
     const [paymentInfo, setPaymentInfo] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const FORM_ID = "3";
+
+    // form id for jotform apis
+    const FORM_ID_1 = "251073674521959";
+    const FORM_ID_2 = "251074257490962";
+    const FORM_ID_3 = "251074104261949";
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             setError(null);
             try {
-                const data = await fetchPaymentInfo(FORM_ID);
-                setPaymentInfo(data);
+                const data = await fetchPaymentInfo(FORM_ID_3);
+                console.log("API Response:", data); // Debug log
+                if (data && data.content) {
+                    setPaymentInfo(data.content);
+                } else {
+                    setError("Invalid response format");
+                }
             } catch (err) {
+                console.error("Error fetching data:", err); // Debug log
                 setError("Failed to fetch payment information");
             } finally {
                 setLoading(false);
@@ -29,7 +39,7 @@ function App() {
     return (
         <div className="App">
             <nav className="navbar">
-                <div className="logo">ShopEase</div>
+                <div className="logo">Mert's E-commerce</div>
                 <div className="nav-links">
                     <a href="#home">Home</a>
                     <a href="#products">Products</a>
@@ -41,7 +51,7 @@ function App() {
 
             <section className="hero">
                 <div className="hero-content">
-                    <h1>Experience the Best Shopping</h1>
+                    <h1>E-commerce Website</h1>
                     <p>Discover amazing products at unbeatable prices</p>
                     <button className="cta-button">Shop Now</button>
                 </div>
