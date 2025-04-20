@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import { fetchPaymentInfo } from "./services/api";
 import Product from "./components/Product/Product";
+import Navbar from "./components/Navbar/Navbar";
 
 function App() {
     const [paymentInfo, setPaymentInfo] = useState(null);
@@ -40,10 +42,11 @@ function App() {
             setError(null);
             try {
                 const data = await fetchPaymentInfo(FORM_ID_3);
-                console.log("API Response:", data); // Debug log
+                // console.log("API Response:", data); // Debug log
                 if (data && data.content) {
                     setPaymentInfo(data.content);
-                    // İlk 10 ürünü göster
+
+                    // İlk 10 ürün
                     setDisplayedProducts(data.content.products.slice(0, 10));
                 } else {
                     setError("Invalid response format");
@@ -96,19 +99,8 @@ function App() {
         }
     }, [currentPage, paymentInfo]);
 
-    return (
-        <div className="App">
-            <nav className="navbar">
-                <div className="logo">Mert's E-commerce</div>
-                <div className="nav-links">
-                    <a href="#home">Home</a>
-                    <a href="#products">Products</a>
-                    <a href="#about">About</a>
-                    <a href="#contact">Contact</a>
-                </div>
-                <div className="cart-icon">🛒</div>
-            </nav>
-
+    const HomePage = () => (
+        <>
             <section className="hero">
                 <div className="hero-content">
                     <h1>E-commerce Website 2025</h1>
@@ -165,6 +157,42 @@ function App() {
                     <div className="end-message">No more products to load</div>
                 )}
             </section>
+        </>
+    );
+
+    const AboutPage = () => (
+        <div className="about-page">
+            <h1>About Us</h1>
+            <p>Welcome to our e-commerce platform!</p>
+        </div>
+    );
+
+    const ProductsPage = () => (
+        <div className="products-page">
+            <h1>Our Products</h1>
+            <p>Browse our amazing selection of products!</p>
+        </div>
+    );
+
+    const ContactPage = () => (
+        <div className="contact-page">
+            <h1>Contact Us</h1>
+            <p>Get in touch with us!</p>
+        </div>
+    );
+
+    return (
+        <div className="App">
+            <Navbar />
+
+            <main>
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/products" element={<ProductsPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                </Routes>
+            </main>
 
             <footer className="footer">
                 <p>&copy; 2025 Mert's E-commerce. All rights reserved.</p>
