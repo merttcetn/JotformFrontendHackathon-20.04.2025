@@ -1,11 +1,13 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { removeFromCart, updateQuantity } from "../../store/cartSlice";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import "./CartModal.css";
 
 const CartModal = ({ isOpen, onClose }) => {
+    const navigate = useNavigate();
     const cartItems = useSelector((state) => state.cart.items);
     const total = useSelector((state) => state.cart.total);
     const dispatch = useDispatch();
@@ -27,6 +29,11 @@ const CartModal = ({ isOpen, onClose }) => {
         if (newQuantity > 0) {
             dispatch(updateQuantity({ pid, quantity: newQuantity }));
         }
+    };
+
+    const handleCheckout = () => {
+        onClose(); // Close the modal
+        navigate("/checkout"); // Navigate to checkout page
     };
 
     // Get the product title or name depending on what's available
@@ -138,7 +145,10 @@ const CartModal = ({ isOpen, onClose }) => {
                                 <h3>Total: ${total.toFixed(2)}</h3>
                             </div>
                         </div>
-                        <button className="checkout-button">
+                        <button
+                            className="checkout-button"
+                            onClick={handleCheckout}
+                        >
                             Proceed to Checkout
                         </button>
                     </div>

@@ -4,6 +4,7 @@ import "./App.css";
 import { fetchPaymentInfo } from "./services/api";
 import Product from "./components/Product/Product";
 import Navbar from "./components/Navbar/Navbar";
+import Checkout from "./pages/Checkout/Checkout";
 
 function App() {
     const [paymentInfo, setPaymentInfo] = useState(null);
@@ -191,6 +192,7 @@ function App() {
                     <Route path="/products" element={<ProductsPage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/checkout" element={<Checkout />} />
                 </Routes>
             </main>
 
