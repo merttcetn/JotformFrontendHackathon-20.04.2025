@@ -1,44 +1,87 @@
-# Jotform Frontend Hackathon Project
+# Jotform Frontend Hackathon Projesi
 
-## User Information
+## Kullanıcı Bilgileri
 
-Please fill in your information after forking this repository:
+-   **İsim**: Mert Çetin
 
--   **Name**: Mert Çetin
+## Proje Açıklaması
 
-## Project Description
+Bu proje, Jotform Frontend Hackathon için geliştirilmiş bir e-ticaret web uygulamasıdır. Jotform API'leri ile entegre çalışarak ürün bilgilerini çeker ve ödeme işlemlerini gerçekleştirir. Ürün listeleme, alışveriş sepeti işlevselliği ve ödeme süreci içeren duyarlı bir kullanıcı arayüzüne sahiptir.
 
-[Add a brief description of your project here]
+## Temel Özellikler
 
-## Getting Started
+-   Görsellerle, açıklamalarla ve fiyatlandırma ile ürün gösterimi
+-   Ekleme/çıkarma işlevselliğine sahip alışveriş sepeti
+-   Jotform ile entegre ödeme süreci
+-   Mobil ve masaüstü için duyarlı tasarım
+-   Redux ile durum yönetimi
+-   Her ürün için benzer ürün önerileri
+-   Sepette gerçek zamanlı toplam fiyat hesaplaması
 
-[Add instructions for setting up and running the project]
+## Benzer Ürünler Özelliği
 
-## License
+Ürün detay modalında, seçilen ürüne benzer ürünler listelenmektedir. Bu özellik kullanıcıların ilgilenebilecekleri diğer ürünleri keşfetmelerine yardımcı olur.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+![Benzer Ürünler](screenshots/similar_products.png)
 
-# 🚀 Hackathon Duyurusu
+## Dinamik Toplam Fiyat Hesaplaması
 
-## 📅 Tarih ve Saat
+Alışveriş sepetindeki ürünlerin miktarı değiştiğinde toplam fiyat otomatik olarak güncellenir. Bu sayede kullanıcılar her zaman güncel toplam tutarı görebilirler.
 
-Pazar günü saat 11:00'da başlayacak.
+![Toplam Fiyat Hesaplaması](screenshots/total_price.png)
 
-## 🎯 Hackathon Konsepti
+## Form ID Varyasyonları
 
-Bu hackathon'da, size özel hazırlanmış bir senaryo üzerine web uygulaması geliştirmeniz istenecektir. Hackathon başlangıcında senaryo detayları paylaşılacaktır.Katılımcılar, verilen GitHub reposunu fork ederek kendi geliştirme ortamlarını oluşturacaklardır.
+Uygulama, kullanılan form ID'sine göre modal tasarımını dinamik olarak değiştirir:
 
-## 📦 GitHub Reposu
+### Form ID Değiştirme
 
-Hackathon için kullanılacak repo: [JotformFrontendHackathon-20.04.2025](https://github.com/erayaydinJF/JotformFrontendHackathon-20.04.2025)
+Form ID'niz App.js dosyasında manuel olarak değiştirilmelidir:
 
-## 🛠️ Hazırlık Süreci
+![Form ID Değiştirme](screenshots/to_change_form_id.png)
 
-1. GitHub reposunu fork edin
-2. Tercih ettiğiniz framework ile geliştirme ortamınızı hazırlayın
-3. Hazırladığınız setup'ı fork ettiğiniz repoya gönderin
+### Form ID 2 Modal Tasarımı
 
-## 💡 Önemli Notlar
+![Form ID 2 Modal Tasarımı](screenshots/form_id_2_modal.png)
 
--   Katılımcılar kendi tercih ettikleri framework'leri kullanabilirler
--   Geliştirme ortamınızı önceden hazırlayıp reponuza göndermeniz önerilir
+### Form ID 3 Modal Tasarımı
+
+![Form ID 3 Modal Tasarımı](screenshots/form_id_3_modal.png)
+
+Farklı tasarımları görmek için App.js dosyasındaki form ID'sini değiştirebilirsiniz:
+
+```javascript
+// Kullanılabilir form ID'leri: FORM_ID_1, FORM_ID_2, FORM_ID_3
+const selectedFORM_ID = FORM_ID_3; // İstediğiniz form ID'sine değiştirin
+```
+
+## Kullanılan Teknolojiler
+
+-   React 19
+-   Navigasyon için React Router
+-   Durum yönetimi için Redux
+-   Material UI bileşenleri
+-   Jotform API entegrasyonu
+
+## Başlangıç
+
+Projeyi yerel olarak çalıştırmak için:
+
+1. Depoyu klonlayın
+2. Proje dizinine gidin:
+    ```
+    cd frontend_jotform
+    ```
+3. Bağımlılıkları yükleyin:
+    ```
+    npm install
+    ```
+4. Geliştirme sunucusunu başlatın:
+    ```
+    npm start
+    ```
+5. Tarayıcınızı açın ve http://localhost:3000 adresine gidin
+
+## Lisans
+
+Bu proje MIT Lisansı altında lisanslanmıştır - detaylar için [LICENSE](LICENSE) dosyasına bakın.

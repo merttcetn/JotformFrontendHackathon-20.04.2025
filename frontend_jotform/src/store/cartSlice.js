@@ -1,10 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-    items: [], // array of items in the cart
-    total: 0, // total price of the cart
-    selectedProductsList: {}, // JotForm formatına uygun ürün listesi
+// localStorage'dan sepet verilerini al
+const loadCartFromLocalStorage = () => {
+    try {
+        const storedCart = localStorage.getItem("cart");
+        if (storedCart) {
+            return JSON.parse(storedCart);
+        }
+    } catch (error) {
+        console.error("Failed to load cart from localStorage:", error);
+    }
+    return {
+        items: [],
+        total: 0,
+        selectedProductsList: {},
+    };
 };
+
+// localStorage'a sepet verilerini kaydet
+const saveCartToLocalStorage = (cart) => {
+    try {
+        localStorage.setItem("cart", JSON.stringify(cart));
+    } catch (error) {
+        console.error("Failed to save cart to localStorage:", error);
+    }
+};
+
+const initialState = loadCartFromLocalStorage();
 
 const cartSlice = createSlice({
     name: "cart",
@@ -31,6 +53,13 @@ const cartSlice = createSlice({
                 const itemPrice = item.finalPrice || item.price;
                 return sum + parseFloat(itemPrice) * item.quantity;
             }, 0);
+
+            // localStorage'a kaydet
+            saveCartToLocalStorage({
+                items: state.items,
+                total: state.total,
+                selectedProductsList: state.selectedProductsList,
+            });
 
             // debug log
             console.log("Cart updated after ADD:", {
@@ -71,6 +100,13 @@ const cartSlice = createSlice({
                 const itemPrice = item.finalPrice || item.price;
                 return sum + parseFloat(itemPrice) * item.quantity;
             }, 0);
+
+            // localStorage'a kaydet
+            saveCartToLocalStorage({
+                items: state.items,
+                total: state.total,
+                selectedProductsList: state.selectedProductsList,
+            });
 
             // debug log
             console.log("Cart updated after REMOVE:", {
@@ -116,6 +152,13 @@ const cartSlice = createSlice({
                     return sum + parseFloat(itemPrice) * item.quantity;
                 }, 0);
 
+                // localStorage'a kaydet
+                saveCartToLocalStorage({
+                    items: state.items,
+                    total: state.total,
+                    selectedProductsList: state.selectedProductsList,
+                });
+
                 // debug log
                 console.log("Cart updated after QUANTITY UPDATE:", {
                     updatedItem: {
@@ -146,6 +189,9 @@ const cartSlice = createSlice({
             state.items = [];
             state.total = 0;
             state.selectedProductsList = {};
+
+            // localStorage'dan sepeti temizle
+            localStorage.removeItem("cart");
 
             // debug log
             console.log("Cart CLEARED completely", {

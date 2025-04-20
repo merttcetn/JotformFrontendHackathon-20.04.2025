@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchPaymentInfo } from "../../services/api";
 import Product from "../../components/Product/Product";
+import SearchIcon from "@mui/icons-material/Search";
 import "./Products.css";
 
 const Products = ({ formId }) => {
@@ -9,8 +10,10 @@ const Products = ({ formId }) => {
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [displayedProducts, setDisplayedProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("all");
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,6 +25,7 @@ const Products = ({ formId }) => {
                 if (data && data.content) {
                     setPaymentInfo(data.content);
                     setDisplayedProducts(data.content.products);
+                    setFilteredProducts(data.content.products);
 
                     // Kategorileri çıkar
                     const uniqueCategories = extractCategories(
@@ -42,6 +46,47 @@ const Products = ({ formId }) => {
         fetchData();
     }, [formId]);
 
+    // Search ve kategori filtrelerini uygulayan genel fonksiyon
+    useEffect(() => {
+        if (!paymentInfo) return;
+
+        // Önce kategori filtresini uygula
+        let results = paymentInfo.products;
+
+        if (selectedCategory !== "all") {
+            results = results.filter((product) => {
+                if (product.category) {
+                    return product.category === selectedCategory;
+                } else if (product.cid) {
+                    return `Category ${product.cid}` === selectedCategory;
+                }
+                return false;
+            });
+        }
+
+        // Sonra arama filtresi uygula
+        if (searchTerm.trim() !== "") {
+            const searchLower = searchTerm.toLowerCase();
+            results = results.filter((product) => {
+                const name = (
+                    product.name ||
+                    product.title ||
+                    ""
+                ).toLowerCase();
+                const description = (product.description || "").toLowerCase();
+                const id = (product.pid || "").toString().toLowerCase();
+
+                return (
+                    name.includes(searchLower) ||
+                    description.includes(searchLower) ||
+                    id.includes(searchLower)
+                );
+            });
+        }
+
+        setFilteredProducts(results);
+    }, [paymentInfo, selectedCategory, searchTerm]);
+
     // Ürünlerden kategori listesi çıkaran yardımcı fonksiyon
     const extractCategories = (products) => {
         const categoriesSet = new Set();
@@ -55,23 +100,19 @@ const Products = ({ formId }) => {
         return ["all", ...Array.from(categoriesSet)];
     };
 
-    // Kategori değiştiğinde ürünleri filtrele
+    // Kategori değiştiğinde state güncelle
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
+    };
 
-        if (category === "all") {
-            setDisplayedProducts(paymentInfo.products);
-        } else {
-            const filtered = paymentInfo.products.filter((product) => {
-                if (product.category) {
-                    return product.category === category;
-                } else if (product.cid) {
-                    return `Category ${product.cid}` === category;
-                }
-                return false;
-            });
-            setDisplayedProducts(filtered);
-        }
+    // Arama terimi değiştiğinde state güncelle
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    // Arama formu submit edildiğinde sayfanın yenilenmesini engelle
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
     };
 
     // prevent body scroll when modal is open
@@ -93,26 +134,47 @@ const Products = ({ formId }) => {
                 <h1>All Products</h1>
                 {paymentInfo && paymentInfo.products && (
                     <div className="products-count">
-                        {displayedProducts.length} of{" "}
+                        {filteredProducts.length} of{" "}
                         {paymentInfo.products.length} products listed
                     </div>
                 )}
             </div>
 
-            {/* Kategori filtre menüsü */}
-            <div className="category-filter">
-                <label htmlFor="category-select">Filter by Category:</label>
-                <select
-                    id="category-select"
-                    value={selectedCategory}
-                    onChange={(e) => handleCategoryChange(e.target.value)}
+            <div className="products-filters">
+                {/* Arama kutusu */}
+                <form
+                    onSubmit={handleSearchSubmit}
+                    className="search-container"
                 >
-                    {categories.map((category, index) => (
-                        <option key={index} value={category}>
-                            {category === "all" ? "All Categories" : category}
-                        </option>
-                    ))}
-                </select>
+                    <div className="search-input-wrapper">
+                        <SearchIcon className="search-icon" />
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Search products..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                        />
+                    </div>
+                </form>
+
+                {/* Kategori filtre menüsü */}
+                <div className="category-filter">
+                    <label htmlFor="category-select">Filter by Category:</label>
+                    <select
+                        id="category-select"
+                        value={selectedCategory}
+                        onChange={(e) => handleCategoryChange(e.target.value)}
+                    >
+                        {categories.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category === "all"
+                                    ? "All Categories"
+                                    : category}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             {loading && (
@@ -121,9 +183,9 @@ const Products = ({ formId }) => {
 
             {error && <div className="products-error">{error}</div>}
 
-            {displayedProducts.length > 0 ? (
+            {filteredProducts.length > 0 ? (
                 <div className="products-grid-full">
-                    {displayedProducts.map((product) => (
+                    {filteredProducts.map((product) => (
                         <div key={product.pid}>
                             <Product
                                 product={product}
@@ -136,7 +198,7 @@ const Products = ({ formId }) => {
                 !loading &&
                 !error && (
                     <div className="no-products">
-                        No products available with the selected filter 😔
+                        No products available with the selected filters 😔
                     </div>
                 )
             )}

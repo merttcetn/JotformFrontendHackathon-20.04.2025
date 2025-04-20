@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { clearCart } from "../../store/cartSlice";
 import "./Checkout.css";
 
-const Checkout = () => {
+const Checkout = ({ formId, apiKey }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const cartItems = useSelector((state) => state.cart.items);
@@ -49,9 +49,6 @@ const Checkout = () => {
 
         // Console'da submisyon başladığını görelim
         console.log("Starting order submission process...");
-
-        const formID = "251074257490962"; // FORM ID 2
-        const apiKey = "297573601db060dc8f2ad816457a599e";
 
         // Ürün detaylarını formatla (debug için)
         const productDetails = cartItems
@@ -98,7 +95,7 @@ const Checkout = () => {
         formData.append("submission[124]", orderDate);
 
         // Submission URL'i
-        const submissionUrl = `https://api.jotform.com/form/${formID}/submissions?apiKey=${apiKey}`;
+        const submissionUrl = `https://api.jotform.com/form/${formId}/submissions?apiKey=${apiKey}`;
         console.log("Submitting to:", submissionUrl);
         console.log("Form data:", formData.toString());
 

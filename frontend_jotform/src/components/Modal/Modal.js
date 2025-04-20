@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../store/cartSlice";
 
 // icons
@@ -20,16 +20,48 @@ const Modal = ({ product, onClose }) => {
     const dispatch = useDispatch();
     const [selectedOption, setSelectedOption] = useState(0);
     const [selectedQuantity, setSelectedQuantity] = useState(1);
+    const [similarProducts, setSimilarProducts] = useState([]);
+    const [currentProduct, setCurrentProduct] = useState(product);
+
+    // Redux store'dan tüm ürünleri al
+    const allProducts = useSelector((state) => state.products.products);
+
+    // Benzer ürünleri bul
+    useEffect(() => {
+        if (allProducts.length > 0 && currentProduct) {
+            // Aynı kategorideki ürünleri bul (cid'ye göre)
+            const sameCategoryProducts = allProducts.filter(
+                (p) =>
+                    p.cid === currentProduct.cid && // Aynı kategori
+                    p.pid !== currentProduct.pid // Farklı ürün
+            );
+
+            // En fazla 3 benzer ürün göster
+            const randomSimilarProducts = sameCategoryProducts
+                .sort(() => 0.5 - Math.random()) // Rastgele sırala
+                .slice(0, 3);
+
+            setSimilarProducts(randomSimilarProducts);
+        }
+    }, [allProducts, currentProduct]);
+
+    // Ürünü değiştir ve benzer ürünleri güncelle
+    const changeProduct = (newProduct) => {
+        setCurrentProduct(newProduct);
+        // Diğer state'leri de sıfırla
+        setSelectedOption(0);
+        setSelectedQuantity(1);
+    };
 
     // extract image url from the product
-    const getImageUrl = () => {
-        if (product.image) return product.image;
-        if (product.images) {
+    const getImageUrl = (p = currentProduct) => {
+        if (p.image) return p.image;
+        if (p.images) {
             try {
-                const parsedImages = JSON.parse(product.images);
+                const parsedImages = JSON.parse(p.images);
                 return parsedImages[0] || "";
             } catch (e) {
-                return product.images;
+                return p.images;
             }
         }
         return "";
@@ -78,7 +110,7 @@ const Modal = ({ product, onClose }) => {
 
     // Get product options if they exist
     const getProductOptions = () => {
-        const options = parseJsonField(product.options);
+        const options = parseJsonField(currentProduct.options);
         return Array.isArray(options) ? options : [];
     };
 
@@ -126,13 +158,13 @@ const Modal = ({ product, onClose }) => {
             return parseFloat(priceOptions[selectedOption].price).toFixed(2);
         }
 
-        return parseFloat(product.price || 0).toFixed(2);
+        return parseFloat(currentProduct.price || 0).toFixed(2);
     };
 
     const handleAddToCart = () => {
         // add to the redux store with all product information
         const priceOptions = getPriceOptions();
-        let finalPrice = parseFloat(product.price || 0);
+        let finalPrice = parseFloat(currentProduct.price || 0);
         let optionName = "";
 
         if (
@@ -146,15 +178,17 @@ const Modal = ({ product, onClose }) => {
 
         dispatch(
             addToCart({
-                ...product, // all the product properties
+                ...currentProduct, // all the product properties
                 image: getImageUrl(), // get image url
                 // Parse JSON strings to objects where needed
-                images: parseJsonField(product.images),
+                images: parseJsonField(currentProduct.images),
                 connectedCategories: parseJsonField(
-                    product.connectedCategories
+                    currentProduct.connectedCategories
                 ),
-                connectedProducts: parseJsonField(product.connectedProducts),
-                options: parseJsonField(product.options),
+                connectedProducts: parseJsonField(
+                    currentProduct.connectedProducts
+                ),
+                options: parseJsonField(currentProduct.options),
                 selectedOption: optionName,
                 selectedOptionIndex: selectedOption,
                 quantity: selectedQuantity,
@@ -165,13 +199,14 @@ const Modal = ({ product, onClose }) => {
         onClose();
     };
 
-    if (!product) return null;
+    if (!currentProduct) return null;
 
     // desired attributes
-    const { name, description, price, cid, pid } = product;
+    const { name, description, price, cid, pid } = currentProduct;
     const priceOptions = getPriceOptions();
     const hasSpecialPricing =
-        product.hasSpecialPricing === "1" || product.hasSpecialPricing === true;
+        currentProduct.hasSpecialPricing === "1" ||
+        currentProduct.hasSpecialPricing === true;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -181,12 +216,17 @@ const Modal = ({ product, onClose }) => {
                 </button>
 
                 <div className="modal-header">
-                    <h2 className="modal-title">{name || product.title}</h2>
+                    <h2 className="modal-title">
+                        {name || currentProduct.title}
+                    </h2>
                 </div>
 
                 <div className="modal-product">
                     <div className="modal-image">
-                        <img src={getImageUrl()} alt={name || product.title} />
+                        <img
+                            src={getImageUrl()}
+                            alt={name || currentProduct.title}
+                        />
                     </div>
                     <div className="modal-details">
                         <div className="modal-basic-info">
@@ -295,11 +335,14 @@ const Modal = ({ product, onClose }) => {
                                     Product ID: {pid}
                                 </span>
 
-                                {product.paymentUUID && (
+                                {currentProduct.paymentUUID && (
                                     <span className="product-tag">
                                         <PaymentIcon className="tag-icon" />
                                         Payment ID:{" "}
-                                        {product.paymentUUID.substring(0, 10)}
+                                        {currentProduct.paymentUUID.substring(
+                                            0,
+                                            10
+                                        )}
                                         ...
                                     </span>
                                 )}
@@ -311,105 +354,108 @@ const Modal = ({ product, onClose }) => {
                                     </span>
                                 )}
 
-                                {product.connectedCategories &&
-                                    product.connectedCategories !== "[]" && (
+                                {currentProduct.connectedCategories &&
+                                    currentProduct.connectedCategories !==
+                                        "[]" && (
                                         <span className="product-tag">
                                             <LinkIcon className="tag-icon" />
                                             Connected Categories:{" "}
                                             {formatConnectedInfo(
-                                                product.connectedCategories
+                                                currentProduct.connectedCategories
                                             )}
                                         </span>
                                     )}
 
-                                {product.connectedProducts &&
-                                    product.connectedProducts !== "[]" && (
+                                {currentProduct.connectedProducts &&
+                                    currentProduct.connectedProducts !==
+                                        "[]" && (
                                         <span className="product-tag">
                                             <LinkIcon className="tag-icon" />
                                             Connected Products:{" "}
                                             {formatConnectedInfo(
-                                                product.connectedProducts
+                                                currentProduct.connectedProducts
                                             )}
                                         </span>
                                     )}
 
-                                {product.corder && (
+                                {currentProduct.corder && (
                                     <span className="product-tag">
                                         <SortIcon className="tag-icon" />
-                                        Category Order: {product.corder}
+                                        Category Order: {currentProduct.corder}
                                     </span>
                                 )}
 
-                                {product.order && (
+                                {currentProduct.order && (
                                     <span className="product-tag">
                                         <SortIcon className="tag-icon" />
-                                        Order: {product.order}
+                                        Order: {currentProduct.order}
                                     </span>
                                 )}
 
-                                {product.fitImageToCanvas && (
+                                {currentProduct.fitImageToCanvas && (
                                     <span className="product-tag">
                                         <AspectRatioIcon className="tag-icon" />
                                         Fit Image:{" "}
                                         {formatBooleanValue(
-                                            product.fitImageToCanvas
+                                            currentProduct.fitImageToCanvas
                                         )}
                                     </span>
                                 )}
 
-                                {product.isLowStockAlertEnabled && (
+                                {currentProduct.isLowStockAlertEnabled && (
                                     <span className="product-tag">
                                         <InventoryIcon className="tag-icon" />
                                         Low Stock Alert:{" "}
                                         {formatBooleanValue(
-                                            product.isLowStockAlertEnabled
+                                            currentProduct.isLowStockAlertEnabled
                                         )}
                                     </span>
                                 )}
 
-                                {product.isStockControlEnabled && (
+                                {currentProduct.isStockControlEnabled && (
                                     <span className="product-tag">
                                         <InventoryIcon className="tag-icon" />
                                         Stock Control:{" "}
                                         {formatBooleanValue(
-                                            product.isStockControlEnabled
+                                            currentProduct.isStockControlEnabled
                                         )}
                                     </span>
                                 )}
 
-                                {product.lowStockValue && (
+                                {currentProduct.lowStockValue && (
                                     <span className="product-tag">
                                         <InventoryIcon className="tag-icon" />
-                                        Low Stock Value: {product.lowStockValue}
+                                        Low Stock Value:{" "}
+                                        {currentProduct.lowStockValue}
                                     </span>
                                 )}
 
-                                {product.hasExpandedOption && (
+                                {currentProduct.hasExpandedOption && (
                                     <span className="product-tag">
                                         <TagIcon className="tag-icon" />
                                         Has Expanded Option:{" "}
                                         {formatBooleanValue(
-                                            product.hasExpandedOption
+                                            currentProduct.hasExpandedOption
                                         )}
                                     </span>
                                 )}
 
-                                {product.hasQuantity && (
+                                {currentProduct.hasQuantity && (
                                     <span className="product-tag">
                                         <InventoryIcon className="tag-icon" />
                                         Has Quantity:{" "}
                                         {formatBooleanValue(
-                                            product.hasQuantity
+                                            currentProduct.hasQuantity
                                         )}
                                     </span>
                                 )}
 
-                                {product.hasSpecialPricing && (
+                                {currentProduct.hasSpecialPricing && (
                                     <span className="product-tag">
                                         <TagIcon className="tag-icon" />
                                         Has Special Pricing:{" "}
                                         {formatBooleanValue(
-                                            product.hasSpecialPricing
+                                            currentProduct.hasSpecialPricing
                                         )}
                                     </span>
                                 )}
@@ -417,6 +463,46 @@ const Modal = ({ product, onClose }) => {
                         </div>
                     </div>
                 </div>
+
+                {/* Benzer Ürünler Bölümü */}
+                {similarProducts && similarProducts.length > 0 && (
+                    <div className="similar-products-section">
+                        <h3>Similar Products</h3>
+                        <div className="similar-products">
+                            {similarProducts.map((similarProduct) => (
+                                <div
+                                    key={similarProduct.pid}
+                                    className="similar-product"
+                                    onClick={() =>
+                                        changeProduct(similarProduct)
+                                    }
+                                >
+                                    <div className="similar-product-image">
+                                        <img
+                                            src={getImageUrl(similarProduct)}
+                                            alt={
+                                                similarProduct.name ||
+                                                similarProduct.title
+                                            }
+                                        />
+                                    </div>
+                                    <div className="similar-product-info">
+                                        <h4>
+                                            {similarProduct.name ||
+                                                similarProduct.title}
+                                        </h4>
+                                        <p className="similar-product-price">
+                                            $
+                                            {parseFloat(
+                                                similarProduct.price || 0
+                                            ).toFixed(2)}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

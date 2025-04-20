@@ -1,6 +1,44 @@
 const API_KEY = "297573601db060dc8f2ad816457a599e"; // personal api key
 const BASE_URL = "https://api.jotform.com"; // endpoint url
 
+// Form detaylarını almak için yeni fonksiyon
+export const fetchFormDetails = async (formId) => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/form/${formId}?apiKey=${API_KEY}`
+        );
+
+        if (!response.ok) {
+            console.error(
+                "Response not OK:",
+                response.status,
+                response.statusText
+            );
+            throw new Error(
+                `Failed to fetch form details: ${response.status} ${response.statusText}`
+            );
+        }
+
+        const data = await response.json();
+
+        // Kontrol et ve uygun formatta döndür
+        if (!data || !data.content) {
+            console.error("Invalid form details response format:", data);
+            throw new Error("Invalid response format from API");
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error in fetchFormDetails:", error);
+        console.error("Error details:", {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+        });
+        throw error;
+    }
+};
+
 export const fetchPaymentInfo = async (formId) => {
     /* 
     console.log("Starting fetchPaymentInfo with formId:", formId);

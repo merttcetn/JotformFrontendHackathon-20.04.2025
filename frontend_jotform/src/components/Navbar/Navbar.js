@@ -11,7 +11,7 @@ import CartModal from "../Cart/CartModal";
 // styles
 import "./Navbar.css";
 
-const Navbar = () => {
+const Navbar = ({ title = "Mert's E-commerce" }) => {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const cartItems = useSelector((state) => state.cart.items);
     const cartTotal = useSelector((state) => state.cart.total);
@@ -41,7 +41,7 @@ const Navbar = () => {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
-                    Mert's E-commerce
+                    {title}
                 </Link>
 
                 <div className="navbar-links">

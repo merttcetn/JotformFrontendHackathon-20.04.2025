@@ -1,25 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import "./App.css";
-import { fetchPaymentInfo } from "./services/api";
+import { fetchPaymentInfo, fetchFormDetails } from "./services/api";
 import Product from "./components/Product/Product";
 import Navbar from "./components/Navbar/Navbar";
 import Checkout from "./pages/Checkout/Checkout";
 import Products from "./pages/Products/Products";
+import { setProducts } from "./store/productSlice";
 
 function App() {
+    const dispatch = useDispatch();
     const [paymentInfo, setPaymentInfo] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [displayedProducts, setDisplayedProducts] = useState([]);
+    const [formTitle, setFormTitle] = useState("Mert's E-commerce");
 
     // form id for jotform apis
     const FORM_ID_1 = "251073674521959";
     const FORM_ID_2 = "251074257490962";
     const FORM_ID_3 = "251074104261949";
 
-    const selectedFORM_ID = FORM_ID_2; // Change this to the desired form ID
+    const selectedFORM_ID = FORM_ID_3; // Change this to the desired form ID
+    const API_KEY = "297573601db060dc8f2ad816457a599e";
 
     // prevent body scroll when modal is open
     useEffect(() => {
@@ -34,6 +39,26 @@ function App() {
         };
     }, [isModalOpen]);
 
+    // Form detaylarını ve başlığını al
+    useEffect(() => {
+        const fetchFormTitle = async () => {
+            try {
+                const formData = await fetchFormDetails(selectedFORM_ID);
+                if (formData && formData.content) {
+                    const formInfo = formData.content;
+                    if (formInfo.title) {
+                        console.log("Form title:", formInfo.title);
+                        setFormTitle(formInfo.title);
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching form details:", err);
+            }
+        };
+
+        fetchFormTitle();
+    }, [selectedFORM_ID]);
+
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -46,6 +71,9 @@ function App() {
 
                     // first 8 products
                     setDisplayedProducts(data.content.products.slice(0, 8));
+
+                    // Tüm ürünleri Redux store'a ekle
+                    dispatch(setProducts(data.content.products));
                 } else {
                     setError("Invalid response format");
                 }
@@ -58,13 +86,13 @@ function App() {
         };
 
         fetchData();
-    }, []);
+    }, [dispatch, selectedFORM_ID]);
 
     const HomePage = () => (
         <>
             <section className="hero">
                 <div className="hero-content">
-                    <h1>E-commerce Website 2025</h1>
+                    <h1>{formTitle} Website 2025</h1>
                     <p>Discover amazing products at unbeatable prices</p>
                 </div>
             </section>
@@ -122,12 +150,20 @@ function App() {
 
     return (
         <div className="App">
-            <Navbar />
+            <Navbar title={formTitle} />
 
             <main>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/checkout" element={<Checkout />} />
+                    <Route
+                        path="/checkout"
+                        element={
+                            <Checkout
+                                formId={selectedFORM_ID}
+                                apiKey={API_KEY}
+                            />
+                        }
+                    />
                     <Route
                         path="/products"
                         element={<Products formId={selectedFORM_ID} />}
@@ -136,7 +172,7 @@ function App() {
             </main>
 
             <footer className="footer">
-                <p>&copy; 2025 Mert's E-commerce. All rights reserved.</p>
+                <p>&copy; 2025 {formTitle}. All rights reserved.</p>
             </footer>
         </div>
     );
