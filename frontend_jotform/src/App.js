@@ -42,9 +42,9 @@ function App() {
             setLoading(true);
             setError(null);
             try {
-                const data = await fetchPaymentInfo(FORM_ID_1);
+                // const data = await fetchPaymentInfo(FORM_ID_1);
                 // const data = await fetchPaymentInfo(FORM_ID_2);
-                // const data = await fetchPaymentInfo(FORM_ID_3);
+                const data = await fetchPaymentInfo(FORM_ID_3);
                 // console.log("API Response:", data); // Debug log
                 if (data && data.content) {
                     setPaymentInfo(data.content);
