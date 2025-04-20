@@ -26,6 +26,77 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.checkout-user-info {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 1px solid #e0e0e0;
+}
+
+.checkout-user-info h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 1.4rem;
+}
+
+.checkout-user-info label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #333;
+}
+
+.checkout-user-info input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.checkout-user-info input:focus {
+    border-color: #28a745;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
+.checkout-user-info input::placeholder {
+    color: #aaa;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #f5c6cb;
+}
+
+.place-order-button:disabled,
+.back-button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Mobil görünüm için destek */
+@media (max-width: 768px) {
+    .checkout-user-info {
+        gap: 10px;
+    }
+
+    .checkout-user-info input {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
 .checkout-order-summary h2 {
     margin-top: 0;
     color: #2c3e50;
@@ -210,4 +281,55 @@
     padding: 2px 8px;
     border-radius: 3px;
     display: inline-block;
+}
+
+.submitting-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.submitting-message {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px 30px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+}
+
+.submitting-message h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.submitting-message p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(40, 167, 69, 0.2);
+    border-radius: 50%;
+    border-top-color: #28a745;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

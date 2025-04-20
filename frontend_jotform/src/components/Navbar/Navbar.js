@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -14,10 +14,28 @@ import "./Navbar.css";
 const Navbar = () => {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const cartItems = useSelector((state) => state.cart.items);
+    const cartTotal = useSelector((state) => state.cart.total);
     const cartCount = cartItems.reduce(
         (total, item) => total + item.quantity,
         0
     );
+
+    // Debug log for cart state
+    useEffect(() => {
+        console.log("Current Cart State:", {
+            items: cartItems,
+            total: cartTotal,
+            count: cartCount,
+            itemDetails: cartItems.map((item) => ({
+                id: item.pid,
+                cartItemId: item.cartItemId,
+                name: item.name || item.title,
+                price: item.price,
+                finalPrice: item.finalPrice,
+                quantity: item.quantity,
+            })),
+        });
+    }, [cartItems, cartTotal, cartCount]);
 
     return (
         <nav className="navbar">

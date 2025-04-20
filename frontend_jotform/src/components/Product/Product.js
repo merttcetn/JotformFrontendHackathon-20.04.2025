@@ -91,23 +91,30 @@ const Product = ({ product, onModalStateChange }) => {
         e.stopPropagation();
         const productPrice = getProductPrice();
 
-        dispatch(
-            addToCart({
-                ...product,
-                image: getImageUrl(),
-                images: parseJsonField(product.images),
-                connectedCategories: parseJsonField(
-                    product.connectedCategories
-                ),
-                connectedProducts: parseJsonField(product.connectedProducts),
-                options: parseJsonField(product.options),
-                displayPrice: productPrice, // Store the displayed price
-                finalPrice: parseFloat(productPrice), // Final price for calculations
-                price: parseFloat(product.price || 0), // Keep original price
-                quantity: 1, // Default quantity
-                totalPrice: productPrice, // Total for this item
-            })
-        );
+        const cartItem = {
+            ...product,
+            image: getImageUrl(),
+            images: parseJsonField(product.images),
+            connectedCategories: parseJsonField(product.connectedCategories),
+            connectedProducts: parseJsonField(product.connectedProducts),
+            options: parseJsonField(product.options),
+            displayPrice: productPrice, // Store the displayed price
+            finalPrice: parseFloat(productPrice), // Final price for calculations
+            price: parseFloat(product.price || 0), // Keep original price
+            quantity: 1, // Default quantity
+            totalPrice: productPrice, // Total for this item
+        };
+
+        // Log what we're about to add to cart
+        console.log("Adding to cart:", {
+            productId: product.pid,
+            name: product.name || product.title,
+            price: product.price,
+            finalPrice: parseFloat(productPrice),
+            cartItem: cartItem,
+        });
+
+        dispatch(addToCart(cartItem));
     };
 
     return (

@@ -28,9 +28,25 @@ const cartSlice = createSlice({
             }, 0);
 
             // debug log
-            console.log("Cart updated:", {
-                items: state.items,
-                total: state.total,
+            console.log("Cart updated after ADD:", {
+                newItem: {
+                    cartItemId: uniqueId,
+                    pid: action.payload.pid,
+                    name: action.payload.name || action.payload.title,
+                    price: action.payload.price,
+                    finalPrice: action.payload.finalPrice,
+                    quantity: action.payload.quantity || 1,
+                },
+                itemsCount: state.items.length,
+                total: state.total.toFixed(2),
+                allItems: state.items.map((item) => ({
+                    cartItemId: item.cartItemId,
+                    pid: item.pid,
+                    name: item.name || item.title,
+                    price: item.price,
+                    finalPrice: item.finalPrice,
+                    quantity: item.quantity,
+                })),
             });
         },
         removeFromCart: (state, action) => {
@@ -48,9 +64,18 @@ const cartSlice = createSlice({
             }, 0);
 
             // debug log
-            console.log("Cart updated:", {
-                items: state.items,
-                total: state.total,
+            console.log("Cart updated after REMOVE:", {
+                removedId: action.payload,
+                itemsCount: state.items.length,
+                total: state.total.toFixed(2),
+                allItems: state.items.map((item) => ({
+                    cartItemId: item.cartItemId,
+                    pid: item.pid,
+                    name: item.name || item.title,
+                    price: item.price,
+                    finalPrice: item.finalPrice,
+                    quantity: item.quantity,
+                })),
             });
         },
         updateQuantity: (state, action) => {
@@ -79,9 +104,27 @@ const cartSlice = createSlice({
                 }, 0);
 
                 // debug log
-                console.log("Cart updated:", {
-                    items: state.items,
-                    total: state.total,
+                console.log("Cart updated after QUANTITY UPDATE:", {
+                    updatedItem: {
+                        cartItemId: item.cartItemId,
+                        pid: item.pid,
+                        name: item.name || item.title,
+                        oldQuantity:
+                            item.quantity !== quantity ? quantity : "unchanged",
+                        newQuantity: item.quantity,
+                        price: item.price,
+                        finalPrice: item.finalPrice,
+                    },
+                    itemsCount: state.items.length,
+                    total: state.total.toFixed(2),
+                    allItems: state.items.map((item) => ({
+                        cartItemId: item.cartItemId,
+                        pid: item.pid,
+                        name: item.name || item.title,
+                        price: item.price,
+                        finalPrice: item.finalPrice,
+                        quantity: item.quantity,
+                    })),
                 });
             }
         },
@@ -90,7 +133,13 @@ const cartSlice = createSlice({
             state.total = 0;
 
             // debug log
-            console.log("Cart cleared");
+            console.log("Cart CLEARED completely", {
+                previousItemsCount:
+                    state.items.length > 0 ? state.items.length : 0,
+                previousTotal:
+                    state.total > 0 ? state.total.toFixed(2) : "0.00",
+                newState: { items: [], total: 0 },
+            });
         },
     },
 });
