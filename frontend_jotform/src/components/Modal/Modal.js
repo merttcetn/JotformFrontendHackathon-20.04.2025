@@ -1,7 +1,24 @@
 import React from "react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../store/cartSlice";
 import "./Modal.css";
 
 const Modal = ({ product, onClose }) => {
+    const dispatch = useDispatch();
+
+    const handleAddToCart = () => {
+        dispatch(
+            addToCart({
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                image: product.image,
+                quantity: 1,
+            })
+        );
+        onClose();
+    };
+
     if (!product) return null;
 
     const { name, description, price, images, cid, pid } = product;
@@ -29,7 +46,10 @@ const Modal = ({ product, onClose }) => {
                             <span>Category ID: {cid}</span>
                             <span>Product ID: {pid}</span>
                         </div>
-                        <button className="modal-add-to-cart">
+                        <button
+                            className="modal-add-to-cart"
+                            onClick={handleAddToCart}
+                        >
                             Add to Cart
                         </button>
                     </div>
