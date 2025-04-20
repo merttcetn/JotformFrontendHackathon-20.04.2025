@@ -170,9 +170,22 @@
 
 .loading-message {
     text-align: center;
+    padding: 2rem;
     color: #666;
-    margin-bottom: 1rem;
-    font-style: italic;
+    font-size: 1.1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+.end-message {
+    text-align: center;
+    padding: 1rem;
+    color: #666;
+    font-size: 1rem;
+    margin: 1rem auto;
+    max-width: 600px;
 }
 
 .error-message {
@@ -270,4 +283,21 @@
     border-radius: 8px;
     margin: 2rem auto;
     max-width: 600px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.product-count {
+    color: #666;
+    font-size: 1rem;
+    background-color: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
 }

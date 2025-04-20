@@ -1,17 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./App.css";
 import { fetchPaymentInfo } from "./services/api";
-import Product from "./components/Product";
+import Product from "./components/Product/Product";
 
 function App() {
     const [paymentInfo, setPaymentInfo] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [displayedProducts, setDisplayedProducts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+
+    // infinite scroll
+    const observer = useRef();
+    const loadingRef = useRef();
 
     // form id for jotform apis
     const FORM_ID_1 = "251073674521959";
     const FORM_ID_2 = "251074257490962";
     const FORM_ID_3 = "251074104261949";
+
+    // prevent body scroll when modal is open
+    useEffect(() => {
+        if (isModalOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+        // Cleanup function
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, [isModalOpen]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,6 +43,8 @@ function App() {
                 console.log("API Response:", data); // Debug log
                 if (data && data.content) {
                     setPaymentInfo(data.content);
+                    // İlk 10 ürünü göster
+                    setDisplayedProducts(data.content.products.slice(0, 10));
                 } else {
                     setError("Invalid response format");
                 }
@@ -35,6 +58,43 @@ function App() {
 
         fetchData();
     }, []);
+
+    // Infinite scroll için intersection observer
+    const lastProductElementRef = useCallback(
+        (node) => {
+            if (loading) return;
+            if (observer.current) observer.current.disconnect();
+            observer.current = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && hasMore) {
+                    setCurrentPage((prevPage) => prevPage + 1);
+                }
+            });
+            if (node) observer.current.observe(node);
+        },
+        [loading, hasMore]
+    );
+
+    // Sayfa değiştiğinde daha fazla ürün yükle
+    useEffect(() => {
+        if (currentPage > 1 && paymentInfo && paymentInfo.products) {
+            const startIndex = (currentPage - 1) * 10;
+            const endIndex = startIndex + 10;
+            const newProducts = paymentInfo.products.slice(
+                startIndex,
+                endIndex
+            );
+
+            if (newProducts.length === 0) {
+                setHasMore(false);
+                return;
+            }
+
+            setDisplayedProducts((prevProducts) => [
+                ...prevProducts,
+                ...newProducts,
+            ]);
+        }
+    }, [currentPage, paymentInfo]);
 
     return (
         <div className="App">
@@ -51,68 +111,60 @@ function App() {
 
             <section className="hero">
                 <div className="hero-content">
-                    <h1>E-commerce Website</h1>
+                    <h1>E-commerce Website 2025</h1>
                     <p>Discover amazing products at unbeatable prices</p>
                     <button className="cta-button">Shop Now</button>
                 </div>
             </section>
 
             <section className="payment-section">
-                <h2>Payment Information</h2>
-                {loading && (
-                    <div className="loading-message">
-                        Loading payment information...
-                    </div>
+                <div className="section-header">
+                    <h2>Products</h2>
+                    {paymentInfo && paymentInfo.products && (
+                        <div className="product-count">
+                            {paymentInfo.products.length} products listed
+                        </div>
+                    )}
+                </div>
+                {loading && currentPage === 1 && (
+                    <div className="loading-message">Loading products...</div>
                 )}
                 {error && <div className="error-message">{error}</div>}
-                {paymentInfo &&
-                paymentInfo.products &&
-                paymentInfo.products.length > 0 ? (
+                {displayedProducts.length > 0 ? (
                     <div className="products-grid">
-                        {paymentInfo.products.map((product) => (
-                            <Product key={product.pid} product={product} />
+                        {displayedProducts.map((product, index) => (
+                            <div
+                                key={product.pid}
+                                ref={
+                                    index === displayedProducts.length - 1
+                                        ? lastProductElementRef
+                                        : null
+                                }
+                            >
+                                <Product
+                                    product={product}
+                                    onModalStateChange={setIsModalOpen}
+                                />
+                            </div>
                         ))}
                     </div>
                 ) : (
                     !loading &&
                     !error && (
-                        <div className="no-products">No products available</div>
+                        <div className="no-products">
+                            No products available right now 😔
+                        </div>
                     )
                 )}
+                {loading && currentPage > 1 && (
+                    <div className="loading-message" ref={loadingRef}>
+                        Loading more products...
+                    </div>
+                )}
+                {!hasMore && displayedProducts.length > 0 && (
+                    <div className="end-message">No more products to load</div>
+                )}
             </section>
-
-            {/* <section className="featured-products">
-                <h2>Featured Products</h2>
-                <div className="product-grid">
-                    <div className="product-card">
-                        <img
-                            src="https://via.placeholder.com/200"
-                            alt="Product 1"
-                        />
-                        <h3>Product 1</h3>
-                        <p>$99.99</p>
-                        <button>Add to Cart</button>
-                    </div>
-                    <div className="product-card">
-                        <img
-                            src="https://via.placeholder.com/200"
-                            alt="Product 2"
-                        />
-                        <h3>Product 2</h3>
-                        <p>$149.99</p>
-                        <button>Add to Cart</button>
-                    </div>
-                    <div className="product-card">
-                        <img
-                            src="https://via.placeholder.com/200"
-                            alt="Product 3"
-                        />
-                        <h3>Product 3</h3>
-                        <p>$199.99</p>
-                        <button>Add to Cart</button>
-                    </div>
-                </div>
-            </section> */}
 
             <footer className="footer">
                 <p>&copy; 2025 Mert's E-commerce. All rights reserved.</p>

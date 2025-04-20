@@ -30,6 +30,10 @@ export const fetchPaymentInfo = async (formId) => {
 
         const data = await response.json();
         console.log("Raw response data:", data);
+        console.log(
+            "Total products in response:",
+            data.content?.products?.length || 0
+        );
 
         // Check if the response has the expected format
         if (!data || !data.content) {
