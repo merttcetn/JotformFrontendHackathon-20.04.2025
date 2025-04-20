@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { removeFromCart, updateQuantity } from "../../store/cartSlice";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
+import InfoIcon from "@mui/icons-material/Info";
 import "./CartModal.css";
 
 const CartModal = ({ isOpen, onClose }) => {
@@ -48,6 +49,26 @@ const CartModal = ({ isOpen, onClose }) => {
         return "";
     };
 
+    // Format the connected information
+    const formatConnectedInfo = (connectedData, type) => {
+        if (!connectedData) return "None";
+
+        let parsed = connectedData;
+        if (typeof connectedData === "string") {
+            try {
+                parsed = JSON.parse(connectedData);
+            } catch (e) {
+                return connectedData;
+            }
+        }
+
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.join(", ");
+        }
+
+        return "None";
+    };
+
     return (
         <div className="cart-modal-overlay" onClick={onClose}>
             <div className="cart-modal" onClick={(e) => e.stopPropagation()}>
@@ -86,6 +107,61 @@ const CartModal = ({ isOpen, onClose }) => {
                                                 : item.description}
                                         </p>
                                     )}
+
+                                    <div className="item-additional-info">
+                                        <div className="info-tooltip">
+                                            <InfoIcon fontSize="small" />
+                                            <div className="tooltip-content">
+                                                <ul>
+                                                    {item.paymentUUID && (
+                                                        <li>
+                                                            Payment UUID:{" "}
+                                                            {item.paymentUUID}
+                                                        </li>
+                                                    )}
+                                                    {item.connectedCategories && (
+                                                        <li>
+                                                            Connected
+                                                            Categories:{" "}
+                                                            {formatConnectedInfo(
+                                                                item.connectedCategories
+                                                            )}
+                                                        </li>
+                                                    )}
+                                                    {item.connectedProducts && (
+                                                        <li>
+                                                            Connected Products:{" "}
+                                                            {formatConnectedInfo(
+                                                                item.connectedProducts
+                                                            )}
+                                                        </li>
+                                                    )}
+                                                    {item.fitImageToCanvas && (
+                                                        <li>
+                                                            Fit Image:{" "}
+                                                            {
+                                                                item.fitImageToCanvas
+                                                            }
+                                                        </li>
+                                                    )}
+                                                    {item.isStockControlEnabled && (
+                                                        <li>
+                                                            Stock Control:{" "}
+                                                            {
+                                                                item.isStockControlEnabled
+                                                            }
+                                                        </li>
+                                                    )}
+                                                    {item.corder && (
+                                                        <li>
+                                                            Order: {item.corder}
+                                                        </li>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <p className="item-price">${item.price}</p>
                                     <div className="quantity-controls">
                                         <button

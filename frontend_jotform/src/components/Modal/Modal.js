@@ -21,12 +21,32 @@ const Modal = ({ product, onClose }) => {
         return "";
     };
 
+    // Parse images array if it's a string
+    const parseJsonField = (field) => {
+        if (!field) return [];
+        if (typeof field === "string") {
+            try {
+                return JSON.parse(field);
+            } catch (e) {
+                return field;
+            }
+        }
+        return field;
+    };
+
     const handleAddToCart = () => {
-        // add to the redux store
+        // add to the redux store with all product information
         dispatch(
             addToCart({
                 ...product, // all the product properties
                 image: getImageUrl(), // get image url
+                // Parse JSON strings to objects where needed
+                images: parseJsonField(product.images),
+                connectedCategories: parseJsonField(
+                    product.connectedCategories
+                ),
+                connectedProducts: parseJsonField(product.connectedProducts),
+                options: parseJsonField(product.options),
             })
         );
         onClose();

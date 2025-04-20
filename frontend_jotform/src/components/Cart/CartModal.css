@@ -237,3 +237,71 @@
     padding: 40px;
     font-size: 1.2rem;
 }
+
+.item-additional-info {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.info-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.info-tooltip svg {
+    color: #3498db;
+    transition: all 0.3s ease;
+}
+
+.info-tooltip:hover svg {
+    color: #2980b9;
+    transform: scale(1.1);
+}
+
+.tooltip-content {
+    visibility: hidden;
+    position: absolute;
+    bottom: 120%;
+    left: 0;
+    width: 250px;
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 10px 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 10;
+    transform: translateY(10px);
+    overflow: hidden;
+    font-size: 0.9rem;
+    color: #555;
+    border: 1px solid #eee;
+}
+
+.info-tooltip:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tooltip-content::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 20px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+}
+
+.tooltip-content ul {
+    margin: 0;
+    padding: 0 0 0 15px;
+    list-style-type: disc;
+}
+
+.tooltip-content li {
+    margin: 5px 0;
+}

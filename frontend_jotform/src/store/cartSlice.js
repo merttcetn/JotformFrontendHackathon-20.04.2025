@@ -17,8 +17,9 @@ const cartSlice = createSlice({
             if (existingItem) {
                 existingItem.quantity += 1;
             } else {
+                // Store all product details in the cart
                 state.items.push({
-                    ...action.payload,
+                    ...action.payload, // Include all product properties
                     quantity: 1,
                 });
             }
