@@ -10,24 +10,22 @@ const cartSlice = createSlice({
     initialState,
     reducers: {
         addToCart: (state, action) => {
-            const existingItem = state.items.find(
-                (item) => item.pid === action.payload.pid
-            );
+            // Her zaman yeni bir item olarak ekliyoruz, var olan miktarını artırmak yerine
+            // Her ürün için benzersiz bir id oluştur (timestamp kullanarak)
+            const uniqueId = new Date().getTime();
 
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                // Store all product details in the cart
-                state.items.push({
-                    ...action.payload, // Include all product properties
-                    quantity: 1,
-                });
-            }
+            // Store all product details in the cart
+            state.items.push({
+                ...action.payload, // Include all product properties
+                cartItemId: uniqueId, // Her cart item için benzersiz ID
+                quantity: action.payload.quantity || 1, // Use provided quantity or default to 1
+            });
 
-            state.total = state.items.reduce(
-                (sum, item) => sum + parseFloat(item.price) * item.quantity,
-                0
-            );
+            // final price calculation
+            state.total = state.items.reduce((sum, item) => {
+                const itemPrice = item.finalPrice || item.price;
+                return sum + parseFloat(itemPrice) * item.quantity;
+            }, 0);
 
             // debug log
             console.log("Cart updated:", {
@@ -36,13 +34,18 @@ const cartSlice = createSlice({
             });
         },
         removeFromCart: (state, action) => {
+            // cartItemId ile item kaldırma
             state.items = state.items.filter(
-                (item) => item.pid !== action.payload
+                (item) =>
+                    item.cartItemId !== action.payload &&
+                    item.pid !== action.payload
             );
-            state.total = state.items.reduce(
-                (sum, item) => sum + parseFloat(item.price) * item.quantity,
-                0
-            );
+
+            // Total hesaplamasını finalPrice veya price değeri kullanarak güncelle
+            state.total = state.items.reduce((sum, item) => {
+                const itemPrice = item.finalPrice || item.price;
+                return sum + parseFloat(itemPrice) * item.quantity;
+            }, 0);
 
             // debug log
             console.log("Cart updated:", {
@@ -51,14 +54,29 @@ const cartSlice = createSlice({
             });
         },
         updateQuantity: (state, action) => {
-            const { pid, quantity } = action.payload;
-            const item = state.items.find((item) => item.pid === pid);
+            const { pid, cartItemId, quantity } = action.payload;
+            let item;
+
+            // Önce cartItemId ile bulmaya çalış
+            if (cartItemId) {
+                item = state.items.find(
+                    (item) => item.cartItemId === cartItemId
+                );
+            }
+
+            // Eğer cartItemId ile bulunamazsa pid ile dene
+            if (!item && pid) {
+                item = state.items.find((item) => item.pid === pid);
+            }
+
             if (item) {
                 item.quantity = quantity;
-                state.total = state.items.reduce(
-                    (sum, item) => sum + parseFloat(item.price) * item.quantity,
-                    0
-                );
+
+                // Total hesaplamasını finalPrice veya price değeri kullanarak güncelle
+                state.total = state.items.reduce((sum, item) => {
+                    const itemPrice = item.finalPrice || item.price;
+                    return sum + parseFloat(itemPrice) * item.quantity;
+                }, 0);
 
                 // debug log
                 console.log("Cart updated:", {

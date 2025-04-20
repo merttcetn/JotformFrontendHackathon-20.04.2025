@@ -2,12 +2,12 @@ const API_KEY = "297573601db060dc8f2ad816457a599e"; // personal api key
 const BASE_URL = "https://api.jotform.com"; // endpoint url
 
 export const fetchPaymentInfo = async (formId) => {
-    /* console.log("Starting fetchPaymentInfo with formId:", formId);
+    console.log("Starting fetchPaymentInfo with formId:", formId);
     console.log("API Key:", API_KEY);
     console.log(
         "Full URL:",
         `${BASE_URL}/form/${formId}/payment-info?apiKey=${API_KEY}`
-    ); */
+    );
 
     try {
         /* console.log("Making API request..."); */

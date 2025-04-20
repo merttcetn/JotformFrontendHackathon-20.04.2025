@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../store/cartSlice";
 
@@ -12,11 +12,14 @@ import LinkIcon from "@mui/icons-material/Link";
 import SortIcon from "@mui/icons-material/Sort";
 import AspectRatioIcon from "@mui/icons-material/AspectRatio";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
 import "./Modal.css";
 
 const Modal = ({ product, onClose }) => {
     const dispatch = useDispatch();
+    const [selectedOption, setSelectedOption] = useState(0);
+    const [selectedQuantity, setSelectedQuantity] = useState(1);
 
     // extract image url from the product
     const getImageUrl = () => {
@@ -73,8 +76,74 @@ const Modal = ({ product, onClose }) => {
         return value || "N/A";
     };
 
+    // Get product options if they exist
+    const getProductOptions = () => {
+        const options = parseJsonField(product.options);
+        return Array.isArray(options) ? options : [];
+    };
+
+    // Get price options if special pricing exists
+    const getPriceOptions = () => {
+        const options = getProductOptions();
+        if (!options || options.length === 0) return null;
+
+        // Find the option with specialPricing = true or has specialPrices
+        const specialPricingOption = options.find(
+            (opt) => opt.specialPricing === true || opt.specialPrices
+        );
+
+        if (!specialPricingOption) return null;
+
+        let prices = [];
+        let variants = [];
+
+        if (specialPricingOption.specialPrices) {
+            prices = specialPricingOption.specialPrices
+                .split(",")
+                .map((p) => parseFloat(p).toFixed(2));
+        }
+
+        if (specialPricingOption.properties) {
+            variants = specialPricingOption.properties.split("\n");
+        }
+
+        // Match prices with variants
+        return variants.map((variant, index) => ({
+            name: variant,
+            price: prices[index] || 0,
+        }));
+    };
+
+    // Calculate current price based on selection
+    const getCurrentPrice = () => {
+        const priceOptions = getPriceOptions();
+
+        if (
+            priceOptions &&
+            priceOptions.length > 0 &&
+            priceOptions[selectedOption]
+        ) {
+            return parseFloat(priceOptions[selectedOption].price).toFixed(2);
+        }
+
+        return parseFloat(product.price || 0).toFixed(2);
+    };
+
     const handleAddToCart = () => {
         // add to the redux store with all product information
+        const priceOptions = getPriceOptions();
+        let finalPrice = parseFloat(product.price || 0);
+        let optionName = "";
+
+        if (
+            priceOptions &&
+            priceOptions.length > 0 &&
+            priceOptions[selectedOption]
+        ) {
+            finalPrice = parseFloat(priceOptions[selectedOption].price);
+            optionName = priceOptions[selectedOption].name;
+        }
+
         dispatch(
             addToCart({
                 ...product, // all the product properties
@@ -86,6 +155,11 @@ const Modal = ({ product, onClose }) => {
                 ),
                 connectedProducts: parseJsonField(product.connectedProducts),
                 options: parseJsonField(product.options),
+                selectedOption: optionName,
+                selectedOptionIndex: selectedOption,
+                quantity: selectedQuantity,
+                finalPrice: finalPrice,
+                totalPrice: (finalPrice * selectedQuantity).toFixed(2),
             })
         );
         onClose();
@@ -95,6 +169,9 @@ const Modal = ({ product, onClose }) => {
 
     // desired attributes
     const { name, description, price, cid, pid } = product;
+    const priceOptions = getPriceOptions();
+    const hasSpecialPricing =
+        product.hasSpecialPricing === "1" || product.hasSpecialPricing === true;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -119,9 +196,80 @@ const Modal = ({ product, onClose }) => {
                                 </p>
                             )}
 
+                            {hasSpecialPricing &&
+                            priceOptions &&
+                            priceOptions.length > 0 ? (
+                                <div className="modal-options">
+                                    <div className="option-group">
+                                        <h3>Options</h3>
+                                        <div className="option-buttons">
+                                            {priceOptions.map(
+                                                (option, index) => (
+                                                    <button
+                                                        key={index}
+                                                        className={`option-button ${
+                                                            selectedOption ===
+                                                            index
+                                                                ? "selected"
+                                                                : ""
+                                                        }`}
+                                                        onClick={() =>
+                                                            setSelectedOption(
+                                                                index
+                                                            )
+                                                        }
+                                                    >
+                                                        {option.name} - $
+                                                        {option.price}
+                                                    </button>
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="quantity-selector">
+                                        <h3>Quantity</h3>
+                                        <div className="quantity-controls">
+                                            <button
+                                                onClick={() =>
+                                                    setSelectedQuantity(
+                                                        Math.max(
+                                                            1,
+                                                            selectedQuantity - 1
+                                                        )
+                                                    )
+                                                }
+                                                disabled={selectedQuantity <= 1}
+                                            >
+                                                -
+                                            </button>
+                                            <span>{selectedQuantity}</span>
+                                            <button
+                                                onClick={() =>
+                                                    setSelectedQuantity(
+                                                        selectedQuantity + 1
+                                                    )
+                                                }
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : null}
+
                             <div className="modal-price-container">
                                 <div className="modal-price">
-                                    ${parseFloat(price).toFixed(2)}
+                                    ${getCurrentPrice()}
+                                    {selectedQuantity > 1 && (
+                                        <span className="modal-subtotal">
+                                            Subtotal: $
+                                            {(
+                                                parseFloat(getCurrentPrice()) *
+                                                selectedQuantity
+                                            ).toFixed(2)}
+                                        </span>
+                                    )}
                                 </div>
                                 <button
                                     className="modal-add-to-cart"
@@ -153,6 +301,13 @@ const Modal = ({ product, onClose }) => {
                                         Payment ID:{" "}
                                         {product.paymentUUID.substring(0, 10)}
                                         ...
+                                    </span>
+                                )}
+
+                                {hasSpecialPricing && (
+                                    <span className="product-tag">
+                                        <LocalOfferIcon className="tag-icon" />
+                                        Special Pricing: Yes
                                     </span>
                                 )}
 

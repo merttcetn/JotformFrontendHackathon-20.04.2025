@@ -22,13 +22,13 @@ const CartModal = ({ isOpen, onClose }) => {
 
     if (!isOpen) return null;
 
-    const handleRemoveItem = (pid) => {
-        dispatch(removeFromCart(pid));
+    const handleRemoveItem = (cartItemId) => {
+        dispatch(removeFromCart(cartItemId));
     };
 
-    const handleQuantityChange = (pid, newQuantity) => {
+    const handleQuantityChange = (cartItemId, newQuantity) => {
         if (newQuantity > 0) {
-            dispatch(updateQuantity({ pid, quantity: newQuantity }));
+            dispatch(updateQuantity({ cartItemId, quantity: newQuantity }));
         }
     };
 
@@ -47,6 +47,11 @@ const CartModal = ({ isOpen, onClose }) => {
         if (item.category) return item.category;
         if (item.cid) return `Category ID: ${item.cid}`;
         return "";
+    };
+
+    // Get the product price
+    const getProductPrice = (item) => {
+        return item.finalPrice || item.price;
     };
 
     // Format the connected information
@@ -84,13 +89,21 @@ const CartModal = ({ isOpen, onClose }) => {
                         <p className="empty-cart">Your cart is empty</p>
                     ) : (
                         cartItems.map((item) => (
-                            <div key={item.pid} className="cart-item">
+                            <div
+                                key={item.cartItemId || item.pid}
+                                className="cart-item"
+                            >
                                 <img
                                     src={item.image}
                                     alt={getProductTitle(item)}
                                 />
                                 <div className="cart-item-details">
                                     <h3>{getProductTitle(item)}</h3>
+                                    {item.selectedOption && (
+                                        <p className="item-option">
+                                            Option: {item.selectedOption}
+                                        </p>
+                                    )}
                                     <p className="item-category">
                                         {getProductCategory(item)}
                                     </p>
@@ -162,12 +175,14 @@ const CartModal = ({ isOpen, onClose }) => {
                                         </div>
                                     </div>
 
-                                    <p className="item-price">${item.price}</p>
+                                    <p className="item-price">
+                                        ${getProductPrice(item)}
+                                    </p>
                                     <div className="quantity-controls">
                                         <button
                                             onClick={() =>
                                                 handleQuantityChange(
-                                                    item.pid,
+                                                    item.cartItemId || item.pid,
                                                     item.quantity - 1
                                                 )
                                             }
@@ -179,7 +194,7 @@ const CartModal = ({ isOpen, onClose }) => {
                                         <button
                                             onClick={() =>
                                                 handleQuantityChange(
-                                                    item.pid,
+                                                    item.cartItemId || item.pid,
                                                     item.quantity + 1
                                                 )
                                             }
@@ -190,14 +205,18 @@ const CartModal = ({ isOpen, onClose }) => {
                                     <p className="item-subtotal">
                                         Subtotal: $
                                         {(
-                                            parseFloat(item.price) *
+                                            parseFloat(getProductPrice(item)) *
                                             item.quantity
                                         ).toFixed(2)}
                                     </p>
                                 </div>
                                 <button
                                     className="remove-item"
-                                    onClick={() => handleRemoveItem(item.pid)}
+                                    onClick={() =>
+                                        handleRemoveItem(
+                                            item.cartItemId || item.pid
+                                        )
+                                    }
                                     title="Remove item"
                                 >
                                     <DeleteIcon />

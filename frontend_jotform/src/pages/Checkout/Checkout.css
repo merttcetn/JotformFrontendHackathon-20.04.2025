@@ -199,3 +199,15 @@
         flex-direction: column;
     }
 }
+
+.checkout-item-option {
+    font-size: 0.85rem;
+    color: #28a745;
+    margin: 2px 0 6px;
+    font-weight: 500;
+    font-style: italic;
+    background-color: rgba(40, 167, 69, 0.1);
+    padding: 2px 8px;
+    border-radius: 3px;
+    display: inline-block;
+}

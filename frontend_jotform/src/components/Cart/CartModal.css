@@ -305,3 +305,15 @@
 .tooltip-content li {
     margin: 5px 0;
 }
+
+.item-option {
+    font-size: 0.9rem;
+    color: #28a745;
+    margin: 4px 0;
+    font-weight: 500;
+    font-style: italic;
+    background-color: rgba(40, 167, 69, 0.1);
+    padding: 2px 8px;
+    border-radius: 3px;
+    display: inline-block;
+}

@@ -1,10 +1,12 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { clearCart } from "../../store/cartSlice";
 import "./Checkout.css";
 
 const Checkout = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const cartItems = useSelector((state) => state.cart.items);
     const total = useSelector((state) => state.cart.total);
 
@@ -13,8 +15,14 @@ const Checkout = () => {
     };
 
     const handleSubmitOrder = () => {
+        dispatch(clearCart());
         alert("Thank you for your order! Order has been placed successfully.");
         navigate("/");
+    };
+
+    // Get the product price
+    const getProductPrice = (item) => {
+        return item.finalPrice || item.price;
     };
 
     if (cartItems.length === 0) {
@@ -42,7 +50,10 @@ const Checkout = () => {
                     <h2>Your Cart Items</h2>
                     <div className="checkout-items">
                         {cartItems.map((item) => (
-                            <div key={item.pid} className="checkout-item">
+                            <div
+                                key={item.cartItemId || item.pid}
+                                className="checkout-item"
+                            >
                                 <div className="checkout-item-image">
                                     <img
                                         src={item.image}
@@ -51,13 +62,19 @@ const Checkout = () => {
                                 </div>
                                 <div className="checkout-item-details">
                                     <h3>{item.name || item.title}</h3>
+                                    {item.selectedOption && (
+                                        <p className="checkout-item-option">
+                                            Option: {item.selectedOption}
+                                        </p>
+                                    )}
                                     <p className="checkout-item-price">
-                                        ${item.price} × {item.quantity}
+                                        ${getProductPrice(item)} ×{" "}
+                                        {item.quantity}
                                     </p>
                                     <p className="checkout-item-subtotal">
                                         $
                                         {(
-                                            parseFloat(item.price) *
+                                            parseFloat(getProductPrice(item)) *
                                             item.quantity
                                         ).toFixed(2)}
                                     </p>
@@ -88,7 +105,10 @@ const Checkout = () => {
                         <button className="back-button" onClick={handleGoBack}>
                             Back to Shop
                         </button>
-                        <button className="place-order-button">
+                        <button
+                            className="place-order-button"
+                            onClick={handleSubmitOrder}
+                        >
                             Place Order
                         </button>
                     </div>

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-import InfoIcon from "@mui/icons-material/Info";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../store/cartSlice";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import "./Product.css";
 import Modal from "../Modal/Modal";
 
 const Product = ({ product, onModalStateChange }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [showDetails, setShowDetails] = useState(false);
+    const dispatch = useDispatch();
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
 
     const handleModalOpen = () => {
         setIsModalOpen(true);
@@ -15,11 +17,6 @@ const Product = ({ product, onModalStateChange }) => {
     const handleModalClose = () => {
         setIsModalOpen(false);
         onModalStateChange(false);
-    };
-
-    const toggleDetails = (e) => {
-        e.stopPropagation();
-        setShowDetails(!showDetails);
     };
 
     // Parse JSON fields
@@ -46,25 +43,71 @@ const Product = ({ product, onModalStateChange }) => {
         return "https://via.placeholder.com/200";
     };
 
-    // Format connected information
-    const formatConnectedInfo = (connectedData) => {
-        if (!connectedData) return "None";
+    // Get product price based on options and special pricing
+    const getProductPrice = () => {
+        // Check if product has special pricing
+        if (
+            product.hasSpecialPricing === "1" ||
+            product.hasSpecialPricing === true
+        ) {
+            const options = parseJsonField(product.options);
 
-        const parsed = parseJsonField(connectedData);
+            // Find the option with specialPricing = true
+            if (Array.isArray(options) && options.length > 0) {
+                const specialPricingOption = options.find(
+                    (opt) => opt.specialPricing === true
+                );
 
-        if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed.join(", ");
+                if (
+                    specialPricingOption &&
+                    specialPricingOption.specialPrices
+                ) {
+                    // Get first price from specialPrices if it exists
+                    const prices =
+                        specialPricingOption.specialPrices.split(",");
+                    if (prices.length > 0 && prices[0]) {
+                        return parseFloat(prices[0]).toFixed(2);
+                    }
+                }
+
+                // For option structures like in the second example
+                for (const option of options) {
+                    if (option.specialPrices) {
+                        const prices = option.specialPrices.split(",");
+                        if (prices.length > 0 && prices[0]) {
+                            return parseFloat(prices[0]).toFixed(2);
+                        }
+                    }
+                }
+            }
         }
 
-        return "None";
+        // Return regular price if no special pricing is found
+        return parseFloat(product.price || 0).toFixed(2);
     };
 
-    // Format boolean or yes/no values
-    const formatBooleanValue = (value) => {
-        if (value === "Yes" || value === "No") return value;
-        if (value === true || value === "true") return "Yes";
-        if (value === false || value === "false") return "No";
-        return value || "N/A";
+    // Handle add to cart directly
+    const handleAddToCart = (e) => {
+        e.stopPropagation();
+        const productPrice = getProductPrice();
+
+        dispatch(
+            addToCart({
+                ...product,
+                image: getImageUrl(),
+                images: parseJsonField(product.images),
+                connectedCategories: parseJsonField(
+                    product.connectedCategories
+                ),
+                connectedProducts: parseJsonField(product.connectedProducts),
+                options: parseJsonField(product.options),
+                displayPrice: productPrice, // Store the displayed price
+                finalPrice: parseFloat(productPrice), // Final price for calculations
+                price: parseFloat(product.price || 0), // Keep original price
+                quantity: 1, // Default quantity
+                totalPrice: productPrice, // Total for this item
+            })
+        );
     };
 
     return (
@@ -81,7 +124,10 @@ const Product = ({ product, onModalStateChange }) => {
                         </p>
                     )}
                     <div className="product-price">
-                        ${parseFloat(product.price).toFixed(2)}
+                        ${getProductPrice()}
+                        {product.hasSpecialPricing === "1" && (
+                            <span className="price-note">starting from</span>
+                        )}
                     </div>
 
                     <div className="product-meta">
@@ -95,112 +141,13 @@ const Product = ({ product, onModalStateChange }) => {
                                 Product ID: {product.pid}
                             </span>
                         </div>
-
-                        <div
-                            className="product-info-icon"
-                            onClick={toggleDetails}
-                        >
-                            <InfoIcon />
-                        </div>
                     </div>
 
-                    {showDetails && (
-                        <div
-                            className="product-additional-details"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <h4>Product Details</h4>
-                            <ul>
-                                {product.paymentUUID && (
-                                    <li>Payment UUID: {product.paymentUUID}</li>
-                                )}
-                                {product.connectedCategories && (
-                                    <li>
-                                        Connected Categories:{" "}
-                                        {formatConnectedInfo(
-                                            product.connectedCategories
-                                        )}
-                                    </li>
-                                )}
-                                {product.connectedProducts && (
-                                    <li>
-                                        Connected Products:{" "}
-                                        {formatConnectedInfo(
-                                            product.connectedProducts
-                                        )}
-                                    </li>
-                                )}
-                                {product.corder && (
-                                    <li>Category Order: {product.corder}</li>
-                                )}
-                                {product.order && (
-                                    <li>Order: {product.order}</li>
-                                )}
-                                {product.fitImageToCanvas && (
-                                    <li>
-                                        Fit Image to Canvas:{" "}
-                                        {formatBooleanValue(
-                                            product.fitImageToCanvas
-                                        )}
-                                    </li>
-                                )}
-                                {product.isLowStockAlertEnabled && (
-                                    <li>
-                                        Low Stock Alert:{" "}
-                                        {formatBooleanValue(
-                                            product.isLowStockAlertEnabled
-                                        )}
-                                    </li>
-                                )}
-                                {product.isStockControlEnabled && (
-                                    <li>
-                                        Stock Control:{" "}
-                                        {formatBooleanValue(
-                                            product.isStockControlEnabled
-                                        )}
-                                    </li>
-                                )}
-                                {product.lowStockValue && (
-                                    <li>
-                                        Low Stock Value: {product.lowStockValue}
-                                    </li>
-                                )}
-                                {product.hasExpandedOption && (
-                                    <li>
-                                        Has Expanded Option:{" "}
-                                        {formatBooleanValue(
-                                            product.hasExpandedOption
-                                        )}
-                                    </li>
-                                )}
-                                {product.hasQuantity && (
-                                    <li>
-                                        Has Quantity:{" "}
-                                        {formatBooleanValue(
-                                            product.hasQuantity
-                                        )}
-                                    </li>
-                                )}
-                                {product.hasSpecialPricing && (
-                                    <li>
-                                        Has Special Pricing:{" "}
-                                        {formatBooleanValue(
-                                            product.hasSpecialPricing
-                                        )}
-                                    </li>
-                                )}
-                            </ul>
-                        </div>
-                    )}
-
-                    <button
-                        className="add-to-cart"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleModalOpen();
-                        }}
-                    >
-                        View Details
+                    <button className="add-to-cart" onClick={handleAddToCart}>
+                        <ShoppingCartIcon
+                            style={{ fontSize: 20, marginRight: 8 }}
+                        />
+                        Add to Cart
                     </button>
                 </div>
             </div>
