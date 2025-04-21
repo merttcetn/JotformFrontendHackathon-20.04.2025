@@ -1,100 +1,101 @@
-# Jotform Frontend Hackathon Projesi
+# Jotform Frontend Hackathon Project
 
-## Kullanıcı Bilgileri
+## User Information
 
--   **İsim**: Mert Çetin
+- **Name**: Mert Çetin
 
-## Proje Açıklaması
+## Project Description
 
-Bu proje, Jotform Frontend Hackathon için geliştirilmiş bir e-ticaret web uygulamasıdır. Jotform API'leri ile entegre çalışarak ürün bilgilerini çeker ve ödeme işlemlerini gerçekleştirir. Ürün listeleme, alışveriş sepeti işlevselliği ve ödeme süreci içeren duyarlı bir kullanıcı arayüzüne sahiptir.
+This project is an e-commerce web application developed for the Jotform Frontend Hackathon. It integrates with Jotform APIs to fetch product information and handle payment transactions. It features a responsive user interface that includes product listing, shopping cart functionality, and a checkout process.
 
-## Temel Özellikler
+## Core Features
 
--   Görsellerle, açıklamalarla ve fiyatlandırma ile ürün gösterimi
--   Ekleme/çıkarma işlevselliğine sahip alışveriş sepeti
--   Mobil ve masaüstü için duyarlı tasarım
--   Redux ile durum yönetimi
--   Her ürün için benzer ürün önerileri
--   Sepette gerçek zamanlı toplam fiyat hesaplaması
--   Kategori bazlı filtreleme ve arama özelliği
--   Jotform form verilerine göre dinamik sayfa başlığı
+- Product display with images, descriptions, and pricing  
+- Add/remove functionality in the shopping cart  
+- Responsive design for both mobile and desktop  
+- State management using Redux  
+- Similar product recommendations for each item  
+- Real-time total price calculation in the cart  
+- Category-based filtering and search feature  
+- Dynamic page title based on Jotform form data  
 
-## Dinamik Sayfa Başlığı
+## Dynamic Page Title
 
-Uygulama, Jotform'dan alınan form verilerine göre sayfa başlığını otomatik olarak günceller. Bu sayede farklı form ID'leri kullanıldığında, o forma ait başlık sayfada görüntülenir.
+The application automatically updates the page title based on the form data fetched from Jotform. This allows different form IDs to display their respective titles on the page.
 
-![Dinamik Sayfa Başlığı](screenshots/dynamic_title.png)
+![Dynamic Page Title](screenshots/dynamic_title.png)
 
-## Arama ve Filtreleme Özellikleri
+## Search and Filter Features
 
-Kullanıcılar, ürünler sayfasında ürünleri kategoriye göre filtreleyebilir veya arama çubuğunu kullanarak belirli ürünleri arayabilirler. Bu özellik, kullanıcıların istedikleri ürünleri hızlıca bulmalarını sağlar.
+Users can filter products by category or use the search bar to find specific items on the products page. This feature allows users to quickly find what they're looking for.
 
-![Ürün Filtreleme ve Arama](screenshots/product_filter_search.png)
+![Product Filtering and Search](screenshots/product_filter_search.png)
 
-## Benzer Ürünler Özelliği
+## Similar Products Feature
 
-Ürün detay modalında, seçilen ürüne benzer ürünler listelenmektedir. Bu özellik kullanıcıların ilgilenebilecekleri diğer ürünleri keşfetmelerine yardımcı olur.
+In the product detail modal, a list of similar products is displayed. This helps users discover other items they might be interested in.
 
-![Benzer Ürünler](screenshots/similar_products.png)
+![Similar Products](screenshots/similar_products.png)
 
-## Dinamik Toplam Fiyat Hesaplaması
+## Dynamic Total Price Calculation
 
-Alışveriş sepetindeki ürünlerin miktarı değiştiğinde toplam fiyat otomatik olarak güncellenir. Bu sayede kullanıcılar her zaman güncel toplam tutarı görebilirler.
+When the quantity of products in the shopping cart changes, the total price is automatically updated. This ensures that users always see the current total amount.
 
-![Toplam Fiyat Hesaplaması](screenshots/total_price.png)
+![Total Price Calculation](screenshots/total_price.png)
 
-## Form ID Varyasyonları
+## Form ID Variations
 
-Uygulama, kullanılan form ID'sine göre modal tasarımını dinamik olarak değiştirir:
+The application dynamically changes the modal design based on the used form ID:
 
-### Form ID Değiştirme
+### Changing the Form ID
 
-Form ID'niz App.js dosyasında manuel olarak değiştirilmelidir:
+You must manually change the form ID in the `App.js` file:
 
-![Form ID Değiştirme](screenshots/to_change_form_id.png)
+![Changing Form ID](screenshots/to_change_form_id.png)
 
-### Form ID 2 Modal Tasarımı
+### Form ID 2 Modal Design
 
-![Form ID 2 Modal Tasarımı](screenshots/form_id_2_modal.png)
+![Form ID 2 Modal Design](screenshots/form_id_2_modal.png)
 
-### Form ID 3 Modal Tasarımı
+### Form ID 3 Modal Design
 
-![Form ID 3 Modal Tasarımı](screenshots/form_id_3_modal.png)
+![Form ID 3 Modal Design](screenshots/form_id_3_modal.png)
 
-Farklı tasarımları görmek için App.js dosyasındaki form ID'sini değiştirebilirsiniz:
+To see different designs, change the form ID in `App.js`:
 
 ```javascript
-// Kullanılabilir form ID'leri: FORM_ID_1, FORM_ID_2, FORM_ID_3
-const selectedFORM_ID = FORM_ID_3; // İstediğiniz form ID'sine değiştirin
+// Available form IDs: FORM_ID_1, FORM_ID_2, FORM_ID_3
+const selectedFORM_ID = FORM_ID_3; // Change to the desired form ID
 ```
 
-## Kullanılan Teknolojiler
+## Technologies Used
 
--   React 19
--   Navigasyon için React Router
--   Durum yönetimi için Redux
--   Material UI bileşenleri
--   Jotform API entegrasyonu
+- React 19  
+- React Router for navigation  
+- Redux for state management  
+- Material UI components  
+- Jotform API integration  
 
-## Başlangıç
+## Getting Started
 
-Projeyi yerel olarak çalıştırmak için:
+To run the project locally:
 
-1. Depoyu klonlayın
-2. Proje dizinine gidin:
-    ```
+1. Clone the repository  
+2. Navigate to the project directory:  
+    ```bash
     cd frontend_jotform
     ```
-3. Bağımlılıkları yükleyin:
-    ```
+3. Install dependencies:  
+    ```bash
     npm install
     ```
-4. Geliştirme sunucusunu başlatın:
-    ```
+4. Start the development server:  
+    ```bash
     npm start
     ```
-5. Tarayıcınızı açın ve http://localhost:3000 adresine gidin
+5. Open your browser and go to:  
+    [http://localhost:3000](http://localhost:3000)
 
-## Lisans
+## License
 
-Bu proje MIT Lisansı altında lisanslanmıştır - detaylar için [LICENSE](LICENSE) dosyasına bakın.
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
